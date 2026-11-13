@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, 'Segoe UI', sans-serif;
+  color: #10261b;
+  background: #f3f7f3;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f7f9f4 0%, #edf7ef 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.card {
+  @apply rounded-2xl border border-slate-200/70 bg-white shadow-soft;
+}
+
+.section-title {
+  @apply text-3xl font-bold text-agri-dark md:text-4xl;
+}
+
+.input {
+  @apply mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-agri-green focus:ring-2 focus:ring-emerald-100;
+}
+
+.button-primary {
+  @apply inline-flex items-center justify-center rounded-xl bg-agri-green px-5 py-3 font-semibold text-white transition hover:bg-emerald-700;
+}
+
+.button-secondary {
+  @apply inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 font-semibold text-slate-700 transition hover:bg-slate-50;
+}
