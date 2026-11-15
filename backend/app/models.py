@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, Float, Integer, String, Date
+from sqlalchemy import Boolean, Column, Date, Float, Index, Integer, String
 
 from .database import Base
 
@@ -20,6 +20,17 @@ class User(Base):
 
 class MandiPrice(Base):
     __tablename__ = "mandi_prices"
+    __table_args__ = (
+        Index(
+            "uq_mandi_prices_natural_key",
+            "crop",
+            "state",
+            "district",
+            "mandi_name",
+            "price_date",
+            unique=True,
+        ),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     crop = Column(String, index=True, nullable=False)

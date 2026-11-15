@@ -1,8 +1,9 @@
-from datetime import date, timedelta
+from datetime import date
 
-from sqlalchemy.orm import Session
+from sqlalchemy import Connection
+from sqlalchemy.dialects.postgresql import insert as postgresql_insert
+from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 
-from ..database import SessionLocal
 from ..models import MandiPrice
 
 TAMIL_NADU_DISTRICTS = [
@@ -163,18 +164,32 @@ def build_seed_market_data() -> list[dict]:
     return records
 
 
-SEED_MARKET_DATA = build_seed_market_data()
+def load_seed_data(connection: Connection) -> int:
+    if connection.dialect.name == "postgresql":
+        insert_statement = postgresql_insert
+    elif connection.dialect.name == "sqlite":
+        insert_statement = sqlite_insert
+    else:
+        raise RuntimeError(
+            f"Market seed data is not supported for {connection.dialect.name}."
+        )
 
+    natural_key = [
+        MandiPrice.crop,
+        MandiPrice.state,
+        MandiPrice.district,
+        MandiPrice.mandi_name,
+        MandiPrice.price_date,
+    ]
+    inserted_count = 0
+    batch_size = 500
+    seed_market_data = build_seed_market_data()
+    for offset in range(0, len(seed_market_data), batch_size):
+        batch = seed_market_data[offset : offset + batch_size]
+        statement = insert_statement(MandiPrice).values(batch).on_conflict_do_nothing(
+            index_elements=natural_key
+        )
+        result = connection.execute(statement)
+        inserted_count += result.rowcount or 0
 
-def load_seed_data() -> None:
-    db = SessionLocal()
-    try:
-        has_tamil_nadu_data = db.query(MandiPrice).filter(MandiPrice.state.ilike("Tamil Nadu")).count() > 0
-        if has_tamil_nadu_data:
-            return
-
-        for item in SEED_MARKET_DATA:
-            db.add(MandiPrice(**item))
-        db.commit()
-    finally:
-        db.close()
+    return inserted_count

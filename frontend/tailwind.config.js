@@ -5,11 +5,11 @@ export default {
     extend: {
       colors: {
         agri: {
-          green: '#1f8f5f',
-          dark: '#163c2e',
-          cream: '#f7f9f4',
-          accent: '#dff5e7',
-          gold: '#f3b73d',
+          green: '#247a52',
+          dark: '#173a2b',
+          cream: '#f7f8f2',
+          accent: '#e5f1e7',
+          gold: '#e8b354',
         },
       },
       boxShadow: {

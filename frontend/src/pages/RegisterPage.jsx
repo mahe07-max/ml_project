@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api';
 import { useAuth } from '../context/AuthContext';
+import AutocompleteInput from '../components/AutocompleteInput';
+import useAgriCatalog from '../hooks/useAgriCatalog';
 
 const initialState = {
   full_name: '',
@@ -20,9 +22,14 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { setToken } = useAuth();
+  const catalog = useAgriCatalog(form.state, form.district);
 
-  const handleChange = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = (name, value) => {
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+      ...(name === 'state' && value !== prev.state ? { district: '' } : {}),
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -59,36 +66,52 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="grid gap-5 md:grid-cols-2">
           <div className="md:col-span-1">
-            <label className="text-sm font-medium text-slate-700">Full name</label>
-            <input type="text" name="full_name" className="input" value={form.full_name} onChange={handleChange} required />
+            <label htmlFor="register-full-name" className="text-sm font-medium text-slate-700">Full name</label>
+            <input id="register-full-name" type="text" name="full_name" className="input" value={form.full_name} onChange={(event) => handleChange('full_name', event.target.value)} required />
           </div>
           <div>
-            <label className="text-sm font-medium text-slate-700">Email</label>
-            <input type="email" name="email" className="input" value={form.email} onChange={handleChange} required />
+            <label htmlFor="register-email" className="text-sm font-medium text-slate-700">Email</label>
+            <input id="register-email" type="email" name="email" className="input" value={form.email} onChange={(event) => handleChange('email', event.target.value)} required />
           </div>
           <div>
-            <label className="text-sm font-medium text-slate-700">Phone number</label>
-            <input type="tel" name="phone_number" className="input" value={form.phone_number} onChange={handleChange} required />
+            <label htmlFor="register-phone" className="text-sm font-medium text-slate-700">Phone number</label>
+            <input id="register-phone" type="tel" name="phone_number" className="input" value={form.phone_number} onChange={(event) => handleChange('phone_number', event.target.value)} required />
           </div>
           <div>
-            <label className="text-sm font-medium text-slate-700">Password</label>
-            <input type="password" name="password" className="input" value={form.password} onChange={handleChange} minLength={6} required />
+            <label htmlFor="register-password" className="text-sm font-medium text-slate-700">Password</label>
+            <input id="register-password" type="password" name="password" className="input" value={form.password} onChange={(event) => handleChange('password', event.target.value)} minLength={6} required />
           </div>
           <div>
-            <label className="text-sm font-medium text-slate-700">State</label>
-            <input type="text" name="state" className="input" value={form.state} onChange={handleChange} required />
+            <label htmlFor="register-state" className="text-sm font-medium text-slate-700">State</label>
+            <AutocompleteInput
+              id="register-state"
+              name="state"
+              value={form.state}
+              options={catalog.states}
+              onChange={(value) => handleChange('state', value)}
+              placeholder="Search Indian states"
+              required
+            />
           </div>
           <div>
-            <label className="text-sm font-medium text-slate-700">District</label>
-            <input type="text" name="district" className="input" value={form.district} onChange={handleChange} required />
+            <label htmlFor="register-district" className="text-sm font-medium text-slate-700">District</label>
+            <AutocompleteInput
+              id="register-district"
+              name="district"
+              value={form.district}
+              options={catalog.districts}
+              onChange={(value) => handleChange('district', value)}
+              placeholder={form.state ? 'Search available districts' : 'Select a state first'}
+              required
+            />
           </div>
           <div>
-            <label className="text-sm font-medium text-slate-700">Village</label>
-            <input type="text" name="village" className="input" value={form.village} onChange={handleChange} required />
+            <label htmlFor="register-village" className="text-sm font-medium text-slate-700">Village</label>
+            <input id="register-village" type="text" name="village" className="input" value={form.village} onChange={(event) => handleChange('village', event.target.value)} required />
           </div>
           <div>
-            <label className="text-sm font-medium text-slate-700">Preferred language</label>
-            <select name="preferred_language" className="input" value={form.preferred_language} onChange={handleChange}>
+            <label htmlFor="register-language" className="text-sm font-medium text-slate-700">Preferred language</label>
+            <select id="register-language" name="preferred_language" className="input" value={form.preferred_language} onChange={(event) => handleChange('preferred_language', event.target.value)}>
               <option>English</option>
               <option>Hindi</option>
               <option>Marathi</option>
@@ -96,6 +119,7 @@ export default function RegisterPage() {
             </select>
           </div>
 
+          {catalog.error && <div className="md:col-span-2 rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-700">{catalog.error}</div>}
           {error && <div className="md:col-span-2 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-600">{error}</div>}
 
           <div className="md:col-span-2">

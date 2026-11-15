@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import api from '../api';
 import { useAuth } from '../context/AuthContext';
+import AutocompleteInput from '../components/AutocompleteInput';
+import useAgriCatalog from '../hooks/useAgriCatalog';
+import { formatINR } from '../utils/currency';
 
 const defaultForm = {
   crop: 'Rice',
-  state: 'Maharashtra',
-  district: 'Nagpur',
-  mandi: 'Nagpur APMC',
+  state: 'Tamil Nadu',
+  district: 'Coimbatore',
+  mandi: 'Coimbatore Regulated Market',
   quantity: 10,
   horizon_days: 3,
 };
@@ -17,9 +20,16 @@ export default function PredictionPage() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const catalog = useAgriCatalog(form.state, form.district, form.crop);
 
-  const handleChange = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = (name, value) => {
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+      ...(name === 'state' && value !== prev.state ? { district: '', mandi: '' } : {}),
+      ...(name === 'district' && value !== prev.district ? { mandi: '' } : {}),
+      ...(name === 'crop' && value !== prev.crop ? { mandi: '' } : {}),
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -54,31 +64,32 @@ export default function PredictionPage() {
         <form onSubmit={handleSubmit} className="card p-6">
           <div className="grid gap-5 md:grid-cols-2">
             <div>
-              <label className="text-sm font-medium text-slate-700">Crop name</label>
-              <input className="input" name="crop" value={form.crop} onChange={handleChange} required />
+              <label htmlFor="prediction-crop" className="field-label">Crop name</label>
+              <AutocompleteInput id="prediction-crop" name="crop" value={form.crop} options={catalog.crops} onChange={(value) => handleChange('crop', value)} placeholder="Search crops" required />
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700">State</label>
-              <input className="input" name="state" value={form.state} onChange={handleChange} required />
+              <label htmlFor="prediction-state" className="field-label">State</label>
+              <AutocompleteInput id="prediction-state" name="state" value={form.state} options={catalog.states} onChange={(value) => handleChange('state', value)} placeholder="Search Indian states" required />
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700">District</label>
-              <input className="input" name="district" value={form.district} onChange={handleChange} required />
+              <label htmlFor="prediction-district" className="field-label">District</label>
+              <AutocompleteInput id="prediction-district" name="district" value={form.district} options={catalog.districts} onChange={(value) => handleChange('district', value)} placeholder="Search available districts" required />
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700">Preferred mandi</label>
-              <input className="input" name="mandi" value={form.mandi} onChange={handleChange} required />
+              <label htmlFor="prediction-mandi" className="field-label">Preferred mandi</label>
+              <AutocompleteInput id="prediction-mandi" name="mandi" value={form.mandi} options={catalog.markets} onChange={(value) => handleChange('mandi', value)} placeholder="Search markets in this district" required />
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700">Quantity (quintals)</label>
-              <input type="number" className="input" name="quantity" value={form.quantity} onChange={handleChange} min="1" required />
+              <label htmlFor="prediction-quantity" className="field-label">Quantity (quintals)</label>
+              <input id="prediction-quantity" type="number" className="input" name="quantity" value={form.quantity} onChange={(event) => handleChange('quantity', event.target.value)} min="1" required />
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700">Forecast horizon (days)</label>
-              <input type="number" className="input" name="horizon_days" value={form.horizon_days} onChange={handleChange} min="1" max="7" required />
+              <label htmlFor="prediction-horizon" className="field-label">Forecast horizon (days)</label>
+              <input id="prediction-horizon" type="number" className="input" name="horizon_days" value={form.horizon_days} onChange={(event) => handleChange('horizon_days', event.target.value)} min="1" max="7" required />
             </div>
           </div>
 
+          {catalog.error && <div className="mt-5 rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-800">{catalog.error}</div>}
           {error && <div className="mt-5 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-600">{error}</div>}
 
           <button type="submit" className="button-primary mt-6 w-full" disabled={loading}>
@@ -92,7 +103,7 @@ export default function PredictionPage() {
             <div className="mt-6 space-y-4">
               <div className="rounded-2xl bg-agri-accent p-4">
                 <div className="text-sm text-slate-600">Predicted modal price</div>
-                <div className="mt-2 text-4xl font-black text-agri-dark">₹{result.predicted_modal_price.toFixed(0)}</div>
+                <div className="mt-2 text-4xl font-black text-agri-dark">{formatINR(result.predicted_modal_price)}</div>
               </div>
 
               <div className="grid grid-cols-2 gap-4 text-sm">

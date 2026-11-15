@@ -3,9 +3,11 @@
 @tailwind utilities;
 
 :root {
-  font-family: Inter, 'Segoe UI', sans-serif;
+  font-family: Inter, 'Aptos', 'Segoe UI', 'Noto Sans', sans-serif;
   color: #10261b;
-  background: #f3f7f3;
+  background: #f7f8f2;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
 }
 
 html {
@@ -15,7 +17,7 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background: linear-gradient(180deg, #f7f9f4 0%, #edf7ef 100%);
+  background: #f7f8f2;
 }
 
 * {
@@ -23,21 +25,80 @@ body {
 }
 
 .card {
-  @apply rounded-2xl border border-slate-200/70 bg-white shadow-soft;
+  @apply rounded-2xl border border-emerald-950/[0.07] bg-white shadow-soft;
 }
 
 .section-title {
-  @apply text-3xl font-bold text-agri-dark md:text-4xl;
+  @apply text-3xl font-bold tracking-tight text-agri-dark md:text-4xl;
 }
 
 .input {
-  @apply mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-agri-green focus:ring-2 focus:ring-emerald-100;
+  @apply mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-agri-green focus:ring-4 focus:ring-emerald-100/70;
+}
+
+.field-label {
+  @apply text-sm font-semibold text-slate-700;
+}
+
+.page-shell {
+  @apply mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8;
+}
+
+.page-heading {
+  @apply mb-7;
+}
+
+.page-title {
+  @apply mt-3 text-3xl font-black tracking-tight text-agri-dark sm:text-4xl;
+}
+
+.eyebrow {
+  @apply inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-agri-green;
 }
 
 .button-primary {
-  @apply inline-flex items-center justify-center rounded-xl bg-agri-green px-5 py-3 font-semibold text-white transition hover:bg-emerald-700;
+  @apply inline-flex items-center justify-center rounded-xl bg-agri-green px-5 py-3 font-semibold text-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-emerald-800 hover:shadow-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-200;
 }
 
 .button-secondary {
-  @apply inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 font-semibold text-slate-700 transition hover:bg-slate-50;
+  @apply inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 font-semibold text-slate-700 transition duration-200 hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-100;
+}
+
+.feature-card {
+  @apply rounded-2xl border border-emerald-950/[0.07] bg-white p-6 shadow-soft transition duration-200 hover:-translate-y-1 hover:shadow-xl;
+}
+
+.hero-visual {
+  @apply relative min-h-[360px] overflow-hidden rounded-[2rem] bg-gradient-to-br from-emerald-900 via-agri-green to-emerald-200 shadow-2xl shadow-emerald-950/15 sm:min-h-[470px];
+}
+
+.hero-image {
+  @apply absolute inset-0 h-full w-full object-cover;
+}
+
+.hero-image-shade {
+  @apply absolute inset-0 bg-gradient-to-t from-emerald-950/35 via-transparent to-emerald-950/5;
+}
+
+.crop-visual {
+  @apply relative min-h-[280px] overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-emerald-800 to-lime-500 shadow-xl shadow-emerald-950/10;
+}
+
+.crop-visual img {
+  @apply absolute inset-0 h-full w-full object-cover;
+}
+
+.crop-image-caption {
+  @apply absolute bottom-4 left-4 right-4 inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/90 px-4 py-3 text-xs font-semibold text-agri-dark shadow-lg backdrop-blur sm:left-6 sm:right-auto sm:text-sm;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

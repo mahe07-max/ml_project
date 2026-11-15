@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -7,10 +8,15 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from .database import get_db
+from .database import IS_VERCEL_DEPLOYMENT, get_db
 from .models import User
 
-SECRET_KEY = "agriwise-demo-secret-change-me"
+SECRET_KEY = os.environ.get("SECRET_KEY")
+if not SECRET_KEY:
+    if IS_VERCEL_DEPLOYMENT:
+        raise RuntimeError("SECRET_KEY must be set for Vercel deployments.")
+    SECRET_KEY = "agriwise-demo-secret-change-me"
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 

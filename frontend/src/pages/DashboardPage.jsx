@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { AreaChart, Area, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import api from '../api';
 import { useAuth } from '../context/AuthContext';
+import { formatINR } from '../utils/currency';
 
 export default function DashboardPage() {
   const { token } = useAuth();
@@ -35,11 +36,11 @@ export default function DashboardPage() {
   }
 
   const stats = [
-    { label: 'Crop varieties', value: summary.stats.crop_count },
-    { label: 'State coverage', value: summary.stats.state_count },
-    { label: 'District coverage', value: summary.stats.district_count },
-    { label: 'Mandi networks', value: summary.stats.market_count },
-    { label: 'Average price', value: `₹${summary.stats.average_price.toFixed(0)}` },
+    { label: 'Crop catalogue entries', value: summary.stats.crop_count },
+    { label: 'States with records', value: summary.stats.state_count },
+    { label: 'Districts with records', value: summary.stats.district_count },
+    { label: 'Markets in database', value: summary.stats.market_count },
+    { label: 'Average price', value: formatINR(summary.stats.average_price) },
   ];
 
   return (
@@ -47,7 +48,7 @@ export default function DashboardPage() {
       <div className="mb-8">
         <div className="text-sm font-semibold uppercase tracking-[0.2em] text-agri-green">Farmer dashboard</div>
         <h1 className="mt-3 text-3xl font-bold text-agri-dark">{summary.welcome_message}</h1>
-        <p className="mt-2 text-slate-600">{summary.subtitle}</p>
+        <p className="mt-2 text-slate-600">Market history and recommendations depend on the crop and locations with records in the database.</p>
       </div>
 
       <div className="grid gap-5 md:grid-cols-5">
@@ -76,8 +77,8 @@ export default function DashboardPage() {
                 </defs>
                 <CartesianGrid strokeDasharray="4 4" stroke="#dcebe3" />
                 <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip formatter={(value) => [`₹${value}`, 'Modal price']} />
+                <YAxis tickFormatter={formatINR} />
+                <Tooltip formatter={(value) => [formatINR(value), 'Modal price']} />
                 <Area type="monotone" dataKey="price" stroke="#1f8f5f" fill="url(#priceFill)" strokeWidth={3} />
               </AreaChart>
             </ResponsiveContainer>
@@ -117,7 +118,7 @@ export default function DashboardPage() {
                 <tr key={market.id}>
                   <td className="p-3 font-medium text-agri-dark">{market.mandi_name}</td>
                   <td className="p-3">{market.crop}</td>
-                  <td className="p-3">₹{market.modal_price}</td>
+                  <td className="p-3">{formatINR(market.modal_price)}</td>
                   <td className="p-3">{market.arrival_quantity} q</td>
                 </tr>
               ))}

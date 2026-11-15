@@ -44,13 +44,13 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="text-sm font-medium text-slate-700">Email</label>
-            <input className="input" type="email" name="email" value={form.email} onChange={handleChange} required />
+            <label htmlFor="login-email" className="field-label">Email</label>
+            <input id="login-email" className="input" type="email" name="email" value={form.email} onChange={handleChange} required />
           </div>
 
           <div>
-            <label className="text-sm font-medium text-slate-700">Password</label>
-            <input className="input" type="password" name="password" value={form.password} onChange={handleChange} required />
+            <label htmlFor="login-password" className="field-label">Password</label>
+            <input id="login-password" className="input" type="password" name="password" value={form.password} onChange={handleChange} required />
           </div>
 
           {error && <div className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-600">{error}</div>}
